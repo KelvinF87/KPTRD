@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente IA Multi-Modelo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="mobileOverlay" class="mobile-overlay"></div>
+
+    <div class="app-container">
+        <!-- Barra Lateral Izquierda -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <h2>Asistente IA</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button id="newChatBtn" class="nav-btn active">Nuevo chat</button>
+                <button id="historyToggleBtn" class="nav-btn">Historial</button>
+                <button id="settingsToggleBtn" class="nav-btn">Configuración</button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">K</div>
+                    <span class="user-name">Kelvin Jose Familia Adames</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main id="mainContent" class="main-area">
+            <!-- Vista de Chat -->
+            <div id="chatView" class="view active">
+                <div class="chat-header-main">
+                    <button id="menuToggleBtn" class="menu-toggle-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    
+                    <div class="custom-select-wrapper">
+                        <select id="modelSelector">
+                            <option value="gemini">Gemini</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="openrouter">OpenRouter</option>
+                            <option value="ollama">Ollama (Local)</option>
+                        </select>
+                        <div class="custom-select">
+                            <div class="custom-select-trigger">
+                                <span>Gemini</span>
+                                <div class="arrow"></div>
+                            </div>
+                            <div class="custom-options">
+                                <div class="custom-option selected" data-value="gemini">Gemini</div>
+                                <div class="custom-option" data-value="openai">OpenAI</div>
+                                <div class="custom-option" data-value="openrouter">OpenRouter</div>
+                                <div class="custom-option" data-value="ollama">Ollama (Local)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatContainer">
+                    <div class="welcome-container">
+                        <div class="welcome-logo">🤖</div>
+                        <h1 class="welcome-title">¿Cómo puedo ayudarte hoy?</h1>
+                    </div>
+                    <div class="chat-messages-area"></div>
+                </div>
+                
+                <footer class="composer">
+                    <!-- DIV ADICIONAL PARA ESTILO -->
+                    <div class="composer-inner">
+                        <textarea id="promptInput" placeholder="Escribe tu petición aquí..." rows="1"></textarea>
+                        <div class="composer-buttons">
+                            <button id="searchToggleBtn" class="composer-btn" title="Activar/Desactivar Búsqueda en Internet">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            </button>
+                            <button id="sendBtn" class="composer-btn" title="Enviar Petición">
+                                <svg width="20" height="20" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            </button>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+
+            <!-- Vistas de Historial y Configuración -->
+            <div id="historyView" class="view">
+                <h2>Historial de Conversaciones</h2>
+                <div id="historyList"></div>
+            </div>
+            <div id="settingsView" class="view">
+                <h2>Configuración</h2>
+                <div id="statusMessage" class="status-message"></div>
+                <div class="settings-form">
+                    <p class="settings-description"><b>Importante:</b> La URL de Apps Script solo se usa para la Búsqueda Web. Todas las claves de API y URLs locales se guardan de forma segura en el almacenamiento de tu navegador.</p>
+                    <div class="input-group"><label for="appsScriptUrl">URL de Google Apps Script (SOLO para Búsqueda)</label><input type="url" id="appsScriptUrl" placeholder="Pega la URL de tu Web App aquí"></div><hr>
+                    <div class="input-group"><label for="geminiApiKey">Clave API de Gemini</label><input type="password" id="geminiApiKey" placeholder="Se guarda en tu navegador"></div>
+                    <div class="input-group"><label for="openaiApiKey">Clave API de OpenAI</label><input type="password" id="openaiApiKey" placeholder="Se guarda en tu navegador"></div>
+                    <div class="input-group"><label for="openrouterApiKey">Clave API de OpenRouter</label><input type="password" id="openrouterApiKey" placeholder="Se guarda en tu navegador"></div><hr>
+                    <div class="input-group"><label for="ollamaApiUrl">URL de la API de Ollama (Local)</label><input type="url" id="ollamaApiUrl" placeholder="Ej: http://localhost:11434"></div>
+                </div>
+                <div class="settings-footer"><button id="saveSettingsBtn">Guardar Configuración</button></div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
